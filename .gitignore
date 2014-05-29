@@ -1,3 +1,7 @@
+# IDE files
+*.layout
+*.depend
+
 # Compiled Object files
 *.slo
 *.lo
@@ -19,3 +23,13 @@
 *.exe
 *.out
 *.app
+/RawPrinter-Addin/*.sdf
+/RawPrinter-Addin/*.user
+/RawPrinter-Addin/Debug
+/RawPrinter-Addin/Debug/*
+/RawPrinter-Addin/ipch
+/RawPrinter-Addin/ipch/*
+/RawPrinter-Addin/Release
+/RawPrinter-Addin/Release/*
+/obj
+/RawPrinter-Addin/*.suo

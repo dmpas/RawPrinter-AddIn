@@ -1,0 +1,6 @@
+LIBRARY    "RawPrinter-AddIn"
+
+EXPORTS
+GetClassObject
+DestroyObject
+GetClassNames
