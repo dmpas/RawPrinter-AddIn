@@ -321,7 +321,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 			
 			if (!OpenPrinterW(wp_Name, &hPrinter, NULL)) {
 				wchar_t buf[512];
-				wsprintf(buf, L"OpenPrinterW failed with code: %u", GetLastError());
+				wsprintf(buf, L"OpenPrinterW(%s) failed with code: %u", wp_Name, GetLastError());
 				addError(1, L"Printer error", buf, 1);
 			}
 			
