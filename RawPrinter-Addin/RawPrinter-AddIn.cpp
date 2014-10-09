@@ -296,8 +296,10 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
     { 
     case eMeth_Open:
 		{
-			if (hPrinter)
+			if (hPrinter) {
 				ClosePrinter(hPrinter);
+				hPrinter = NULL;
+			}
 
 			WCHAR_T *m_PrinterName = paParams[0].pwstrVal;
 			uint32_t len = paParams[0].wstrLen;
@@ -305,6 +307,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 		
 			if (PrinterName) {
 				m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
+				PrinterName = NULL;
 				//delete PrinterName;
 			}
 
@@ -317,7 +320,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 			
 			
 			wchar_t *wp_Name = NULL;
-			::convFromShortWchar(&wp_Name, PrinterName, len);
+			::convFromShortWchar(&wp_Name, PrinterName, len + 1);
 			
 			if (!OpenPrinterW(wp_Name, &hPrinter, NULL)) {
 				wchar_t buf[512];
@@ -488,6 +491,7 @@ uint32_t convFromShortWchar(wchar_t** Dest, const WCHAR_T* Source, uint32_t len)
         ++res;
     }
     while (len-- && *tmpShort);
+	tmpWChar = 0;
 
     return res;
 }
