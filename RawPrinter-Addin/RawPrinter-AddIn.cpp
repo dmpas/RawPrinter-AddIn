@@ -58,11 +58,13 @@ CAddInRawPrinter::CAddInRawPrinter()
 	m_iMemory = 0;
 	m_iConnect = 0;
 	hPrinter = 0;
+
+	logfile.open("C:\\Temp\\RawPrinterLog.txt", std::ios_base::trunc);
 }
 //---------------------------------------------------------------------------//
 CAddInRawPrinter::~CAddInRawPrinter()
 {
-
+	logfile.close();
 }
 //---------------------------------------------------------------------------//
 bool CAddInRawPrinter::Init(void* pConnection)
@@ -92,8 +94,10 @@ bool CAddInRawPrinter::RegisterExtensionAs(WCHAR_T** wsExtensionName)
 
 	if (m_iMemory)
 	{
+		logfile << "RegisterExtension... ";
 		if(m_iMemory->AllocMemory((void**)wsExtensionName, iActualSize * sizeof(WCHAR_T)))
 			::convToShortWchar(wsExtensionName, wsExtension, iActualSize);
+		logfile << "OK" << std::endl;
 		return true;
 	}
 
@@ -147,8 +151,10 @@ const WCHAR_T* CAddInRawPrinter::GetPropName(long lPropNum, long lPropAlias)
 
 	if (m_iMemory && wsCurrentName)
 	{
+		logfile << "GetPropName...";
 		if (m_iMemory->AllocMemory((void**)&wsPropName, iActualSize * sizeof(WCHAR_T)))
 			::convToShortWchar(&wsPropName, wsCurrentName, iActualSize);
+		logfile << "OK" << std::endl;
 	}
 
 	return wsPropName;
@@ -237,8 +243,10 @@ const WCHAR_T* CAddInRawPrinter::GetMethodName(const long lMethodNum, const long
 
 	if (m_iMemory && wsCurrentName)
 	{
+		logfile << "GetMethodName...";
 		if(m_iMemory->AllocMemory((void**)&wsMethodName, iActualSize * sizeof(WCHAR_T)))
 			::convToShortWchar(&wsMethodName, wsCurrentName, iActualSize);
+		logfile << "OK" << std::endl;
 	}
 
 	return wsMethodName;
@@ -308,12 +316,12 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 			if (PrinterName) {
 				m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
 				PrinterName = NULL;
-				//delete PrinterName;
 			}
 
 			{
+				logfile << "CallAsProc(Open)...";
 				m_iMemory->AllocMemory(reinterpret_cast<void**>(&PrinterName), sz);
-				//PrinterName = new WCHAR_T[len + 1];
+				logfile << "OK" << std::endl;
 			}
 			memcpy(reinterpret_cast<void*>(PrinterName), reinterpret_cast<void*>(m_PrinterName), sz);
 			PrinterName[len] = 0;
@@ -325,7 +333,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 			if (!OpenPrinterW(wp_Name, &hPrinter, NULL)) {
 				wchar_t buf[512];
 				wsprintf(buf, L"OpenPrinterW(%s) failed with code: %u", wp_Name, GetLastError());
-				addError(1, L"Printer error", buf, 1);
+				addError(ADDIN_E_FAIL, L"Printer error", buf, 1);
 			}
 
 			delete [] wp_Name;
@@ -337,7 +345,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 
 		if (PrinterName) {
 			m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
-			//delete PrinterName;
+			PrinterName = NULL;
 		}
 		ClosePrinter(hPrinter);
 
@@ -351,7 +359,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 
 			DWORD len = strlen(utf8), sent;
 			if (!WritePrinter(hPrinter, utf8, len, &sent))
-				addError(2, L"Failed to send data to printer!", L"Failed!", 2);
+				addError(ADDIN_E_FAIL, L"Failed to send data to printer!", L"Failed!", 2);
 
 			delete [] utf8;
 		}

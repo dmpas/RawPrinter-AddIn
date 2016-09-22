@@ -4,6 +4,8 @@
 #include "ComponentBase.h"
 #include "AddInDefBase.h"
 #include "IMemoryManager.h"
+#include <iostream>
+#include <fstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 // class CAddInRawPrinter
@@ -67,6 +69,7 @@ private:
 
 	HANDLE				hPrinter;
 	WCHAR_T			   *PrinterName;
+	std::ofstream		logfile;
 };
 
 #endif //__ADDINNATIVE_H__
