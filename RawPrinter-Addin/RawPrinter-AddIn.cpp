@@ -164,9 +164,20 @@ bool CAddInRawPrinter::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 { 
 	switch(lPropNum)
 	{
-	case eProp_PrinterName:
-		TV_VT(pvarPropVal) = VTYPE_PWSTR;
-		pvarPropVal->pwstrVal = PrinterName;
+	case eProp_PrinterName: 
+		{
+			logfile << "GetPropVal(PrinterName)...";
+			int nameLength = wcslen(PrinterName);
+			wchar_t *result = NULL;
+
+			m_iMemory->AllocMemory(reinterpret_cast<void**>(&result), sizeof(wchar_t) * (nameLength + 1));
+			wcscpy(result, PrinterName);
+
+			TV_VT(pvarPropVal) = VTYPE_PWSTR;
+			pvarPropVal->pwstrVal = result;
+
+			logfile << "OK" << std::endl;
+		}
 		break;
 	default:
 		return false;
@@ -304,6 +315,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 	{ 
 	case eMeth_Open:
 		{
+			logfile << "CallAsProc(Open)...";
 			if (hPrinter) {
 				ClosePrinter(hPrinter);
 				hPrinter = NULL;
@@ -314,14 +326,13 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 			uint32_t sz = sizeof(WCHAR_T)*(len + 1);
 
 			if (PrinterName) {
-				m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
+				// TODO: Разобраться с освобождением памяти
+				// m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
 				PrinterName = NULL;
 			}
 
 			{
-				logfile << "CallAsProc(Open)...";
 				m_iMemory->AllocMemory(reinterpret_cast<void**>(&PrinterName), sz);
-				logfile << "OK" << std::endl;
 			}
 			memcpy(reinterpret_cast<void*>(PrinterName), reinterpret_cast<void*>(m_PrinterName), sz);
 			PrinterName[len] = 0;
@@ -331,6 +342,8 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 			::convFromShortWchar(&wp_Name, PrinterName, len + 1);
 
 			if (!OpenPrinterW(wp_Name, &hPrinter, NULL)) {
+				logfile << " <OpenPrinter Error> " << std::endl;
+
 				wchar_t buf[512];
 				wsprintf(buf, L"OpenPrinterW(%s) failed with code: %u", wp_Name, GetLastError());
 				addError(ADDIN_E_FAIL, L"Printer error", buf, 1);
@@ -338,36 +351,52 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 
 			delete [] wp_Name;
 
+			logfile << "OK" << std::endl;
+
 		}
 		break;
 
 	case eMeth_Close:
 
+		logfile << "CallAsProc(Close)...";
+
 		if (PrinterName) {
-			m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
+			// TODO: разобраться с освобождением памяти
+			// m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
 			PrinterName = NULL;
 		}
 		ClosePrinter(hPrinter);
+
+		logfile << "OK" << std::endl;
 
 		break;
 
 	case eMeth_SendRaw:
 
 		{
+			logfile << "CallAsProc(SendRaw)...";
+
 			WCHAR_T *wc = paParams[0].pwstrVal;
 			char *utf8 = ConvToUtf8(wc);
 
 			DWORD len = strlen(utf8), sent;
-			if (!WritePrinter(hPrinter, utf8, len, &sent))
+			if (!WritePrinter(hPrinter, utf8, len, &sent)) {
+				logfile << "<WritePrinter Error>";
 				addError(ADDIN_E_FAIL, L"Failed to send data to printer!", L"Failed!", 2);
+			}
 
 			delete [] utf8;
+
+			logfile << "OK" << std::endl;
+
 		}
 		break;
 
 	case eMeth_StartDocument:
 
 		{
+
+			logfile << "CallAsProc(StartDocument)...";
 
 			wchar_t *doc_name = NULL;
 			wchar_t *data_type = NULL;
@@ -383,13 +412,18 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 
 			delete [] doc_name;
 			delete [] data_type;
+
+			logfile << "OK" << std::endl;
 		}
 
 		break;
 
 	case eMeth_EndDocument:
 
+		logfile << "CallAsProc(EndDocument)...";
 		EndDocPrinter(hPrinter);
+		logfile << "OK" << std::endl;
+
 		break;
 
 	default:
