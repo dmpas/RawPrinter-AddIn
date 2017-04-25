@@ -7,6 +7,24 @@
 #define __ADAPTER_DEF_H__
 #include "types.h"
 
+struct IInterface
+{
+};
+
+
+enum Interfaces
+{
+    eIMsgBox = 0,
+    eIPlatformInfo,
+
+#if defined(__ANDROID__)
+    
+    eIAndroidComponentHelper,
+
+#endif    
+
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * This class serves as representation of a platform for external 
@@ -94,6 +112,48 @@ public:
      *  @return the result of
      */
     virtual void ADDIN_API ResetStatusLine() = 0;
+};
+
+class IAddInDefBaseEx :
+    public IAddInDefBase
+{
+public:
+    virtual ~IAddInDefBaseEx() {}
+
+    virtual IInterface* ADDIN_API GetInterface(Interfaces iface) = 0;
+};
+
+struct IMsgBox : 
+    public IInterface
+{
+    virtual bool ADDIN_API Confirm(const WCHAR_T* queryText, tVariant* retVal) = 0;
+
+    virtual bool ADDIN_API Alert(const WCHAR_T* text) = 0;
+};
+
+struct IPlatformInfo :
+    public IInterface
+{
+    enum AppType
+    {            
+        eAppUnknown = -1,
+        eAppThinClient = 0,
+        eAppThickClient,
+        eAppWebClient,
+        eAppServer,
+        eAppExtConn,
+        eAppMobileClient,
+        eAppMobileServer,
+    };
+
+    struct AppInfo
+    {
+        const WCHAR_T* AppVersion;
+        const WCHAR_T* UserAgentInformation;
+        AppType  Application;
+    };
+
+    virtual const AppInfo* ADDIN_API GetPlatformInfo() = 0;
 };
 
 #endif //__ADAPTER_DEF_H__

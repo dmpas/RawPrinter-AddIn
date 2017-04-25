@@ -2,9 +2,25 @@
 #ifndef __COM_H__
 #define __COM_H__
 
-#ifdef __linux__ 
+#if defined(__linux__) || defined(__APPLE__) || defined(__ANDROID__)
+
+#ifdef __ANDROID__
+
+typedef struct {
+    unsigned int   Data1;
+    unsigned short Data2;
+    unsigned short Data3;
+    unsigned char  Data4[ 8 ];
+} uuid_t;
+
+#else
 #include <uuid/uuid.h>
+#endif //__ANDROID__
+
+#ifndef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__  // iOS
 #include <dlfcn.h>
+#endif //!__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
+
 #pragma GCC system_header
 
 typedef long HRESULT;
@@ -24,7 +40,15 @@ typedef long HRESULT;
 #define FAR    far
 
 typedef unsigned long       DWORD;
+#ifndef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__  // iOS
 typedef int                 BOOL;
+#elif defined(__LP64__)
+typedef bool                BOOL;
+#else
+typedef signed char         BOOL;
+#endif //!__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
+
+typedef void                VOID;
 typedef short               SHORT;
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;
@@ -64,6 +88,7 @@ typedef double              DATE;
 typedef short               VARIANT_BOOL;
 typedef void                *PVOID;
 typedef char                CHAR;
+typedef CONST CHAR          *LPCSTR;
 typedef unsigned short      USHORT;
 typedef void                *HMODULE;
 #define OLESTR(str) L##str
@@ -110,6 +135,6 @@ union tCY {
 typedef union tagCY CY;
 #define CLSIDFromString(x,y) uuid_parse((x),(unsigned char*)(y))
 
-#endif //__linux__
+#endif //defined(__linux__) || defined(__APPLE__)
 
 #endif //__COM_H__

@@ -100,3 +100,42 @@ import "ocidl.idl";
 		[helpstring("method GetAppMDIFrame")] HRESULT GetAppMDIFrame([in,out]HWND *hwnd);
 		[helpstring("method CreateAddInWindow")] HRESULT CreateAddInWindow([in]BSTR bstrProgID, [in]BSTR bstrWindowName, [in]long dwStyles, [in]long dwExStyles, [in]RECT *rctl, [in]long Flags, [in,out]HWND *pHwnd, [in,out]IDispatch **pDisp);
 	};
+
+	[
+        object,
+        uuid(3C2136B5-B35A-4FAC-9AC3-F77F361E9467),
+        helpstring("IMsgBox Interface"),
+        pointer_default(unique)
+    ]
+    interface IMsgBox : IUnknown
+    {
+        [helpstring("method Confirm")] HRESULT Confirm([in]BSTR queryText, [out,retval]VARIANT *retVal);
+        [helpstring("method Alert")] HRESULT Alert([in] BSTR text);
+        
+    };
+    typedef [v1_enum] enum _AppType {
+        eAppUnknown = -1,
+        eAppThinClient = 0,
+        eAppThickClient,
+        eAppWebClient,
+        eAppServer,
+        eAppExtConn,
+        eAppMobileClient,
+        eAppMobileServer,
+    } AppType;
+    typedef struct _AppInfo {
+        BSTR AppVersion;
+        BSTR UserAgentInformation;
+        const AppType  Application;
+    } AppInfo;
+	[
+		object,
+		uuid(AAABE126-2230-4a7d-9DDA-8987FD2A62BA),
+		helpstring("IPlatformInfo Interface"),
+		pointer_default(unique)
+	]
+	interface IPlatformInfo : IUnknown
+	{
+		[helpstring("method GetPlatformInfo")] HRESULT GetPlatformInfo([out]AppInfo** info);
+		
+	};

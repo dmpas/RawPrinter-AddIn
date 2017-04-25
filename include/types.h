@@ -2,8 +2,12 @@
 #ifndef __CON_TYPES_H__
 #define __CON_TYPES_H__
 
-#ifndef __linux__
+#if defined(_WINDOWS) || defined(WINAPI_FAMILY)
 #include <windows.h>
+#endif
+
+#if defined(WINAPI_FAMILY)
+#include <wtypes.h>
 #endif
 
 #if __GNUC__ >=3
@@ -53,36 +57,21 @@
 #define ADDIN_E_MSGBOX_FAIL 1009
 
 #ifndef  ADDIN_API
-#ifndef __linux__
+#ifdef _WINDOWS
 #define ADDIN_API __stdcall
 #else
 //#define ADDIN_API __attribute__ ((__stdcall__))
 #define ADDIN_API
-#endif //__linux__
+#endif //_WINDOWS
 #endif //ADDIN_API
 
-#if !defined __linux__
-    ////////////////////////////////////////////////////////////////////////////
-    // sized integer types
-    typedef __int8            int8_t   ; ///< 8-bit integer
-    typedef unsigned __int8   uint8_t  ; ///< 8-bit unsigned integer
-
-    typedef __int16           int16_t  ; ///< 16-bit integer         
-    typedef  unsigned __int16 uint16_t ; ///< 16-bit unsigned integer
-
-    typedef __int32           int32_t  ; ///< 32-bit integer         
-    typedef  unsigned __int32 uint32_t ; ///< 32-bit unsigned integer
-
-    typedef __int64           int64_t  ; ///< 64-bit integer         
-    typedef  unsigned __int64 uint64_t ; ///< 64-bit unsigned integer
-#else        
 #include <stdint.h>
-#endif    
-#ifndef __linux__
+
+#ifdef _WINDOWS
 #define WCHAR_T     wchar_t
 #else
 #define WCHAR_T     uint16_t
-#endif //__linux__
+#endif //_WINDOWS
 typedef unsigned short TYPEVAR;
 enum ENUMVAR
 {   
