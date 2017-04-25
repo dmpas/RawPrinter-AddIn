@@ -1,4 +1,4 @@
-
+п»ї
 #include "stdafx.h"
 
 #include <stdio.h>
@@ -9,8 +9,8 @@
 static wchar_t *g_PropNames[] = {L"PrinterName"};
 static wchar_t *g_MethodNames[] = {L"OpenPrinter", L"ClosePrinter", L"SendRaw", L"StartDocument", L"EndDocument"};
 
-static wchar_t *g_PropNamesRu[] = {L"ИмяПринтера"};
-static wchar_t *g_MethodNamesRu[] = {L"Открыть", L"Закрыть", L"ОтправитьДанные", L"НачатьДокумент", L"ЗакончитьДокумент"};
+static wchar_t *g_PropNamesRu[] = {L"РРјСЏРџСЂРёРЅС‚РµСЂР°"};
+static wchar_t *g_MethodNamesRu[] = {L"РћС‚РєСЂС‹С‚СЊ", L"Р—Р°РєСЂС‹С‚СЊ", L"РћС‚РїСЂР°РІРёС‚СЊР”Р°РЅРЅС‹Рµ", L"РќР°С‡Р°С‚СЊР”РѕРєСѓРјРµРЅС‚", L"Р—Р°РєРѕРЅС‡РёС‚СЊР”РѕРєСѓРјРµРЅС‚"};
 
 static const wchar_t g_kClassNames[] = L"CAddInRawPrinter"; //"|OtherClass1|OtherClass2";
 static IAddInDefBase *pAsyncEvent = NULL;
@@ -326,7 +326,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 			uint32_t sz = sizeof(WCHAR_T)*(len + 1);
 
 			if (PrinterName) {
-				// TODO: Разобраться с освобождением памяти
+				// TODO: Р Р°Р·РѕР±СЂР°С‚СЊСЃСЏ СЃ РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµРј РїР°РјСЏС‚Рё
 				// m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
 				PrinterName = NULL;
 			}
@@ -361,7 +361,7 @@ bool CAddInRawPrinter::CallAsProc(const long lMethodNum,
 		logfile << "CallAsProc(Close)...";
 
 		if (PrinterName) {
-			// TODO: разобраться с освобождением памяти
+			// TODO: СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ СЃ РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµРј РїР°РјСЏС‚Рё
 			// m_iMemory->FreeMemory(reinterpret_cast<void**>(&PrinterName));
 			PrinterName = NULL;
 		}
@@ -595,7 +595,7 @@ char* ConvToUtf8(const WCHAR_T *W)
 			++res;
 
 		} /* 0x10000 0x20000 0x40000*/
-		/* TODO: [E8::Core::UTF-8] сделать обработку кодовых позиций более 2 байт*/
+		/* TODO: [E8::Core::UTF-8] СЃРґРµР»Р°С‚СЊ РѕР±СЂР°Р±РѕС‚РєСѓ РєРѕРґРѕРІС‹С… РїРѕР·РёС†РёР№ Р±РѕР»РµРµ 2 Р±Р°Р№С‚*/
 		else {
 
 		}
